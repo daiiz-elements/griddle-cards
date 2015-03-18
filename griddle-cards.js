@@ -23,8 +23,8 @@ app.tool.toPx = function(number) {
 app.tool.scrollbarWidth = function() {
   var ww = window.innerWidth;
   //TODO: .content依存はマズイ
-  var cw = document.querySelector(".content").clientWidth;
-  return ww-cw;//17;
+  var cw = app.thistag.parentNode.clientWidth;
+  return ww-cw;
 }
 
 // bind機能的なもの
@@ -39,25 +39,27 @@ app.tool.binder = function(template, json) {
   return code;
 }
 
+app.thistag = '';/*document.querySelector("griddle-cards");がセットされる*/
+
 // <griddle-cards> のパス
 app.me = function() {
-  return document.querySelector("griddle-cards");
+  return app.thistag;
 }
 
 // <griddle-cards> 内部アクセスのためのパス
 app.root = function() {
-  return document.querySelector("griddle-cards").shadowRoot;
+  return app.thistag.shadowRoot;
 }
 
 // トップレベルテンプレート <template id="stage"> 内部アクセスのためのパス
 app.stage = function() {
-  return document.querySelector("griddle-cards").shadowRoot.getElementById("stage");
+  return app.thistag.shadowRoot.getElementById("stage");
 }
 
 // 最適なカードの横幅をNumberで返す
 app.flexw = function() {
   var stage_width = window.innerWidth - app.tool.scrollbarWidth();
-  var g = document.querySelector("griddle-cards");
+  var g = app.thistag;
   return getFlexibleWidth(g.column, [g.marginLeft, g.marginRight], stage_width, g.minWidth, g.maxWidth);
 }
 
@@ -79,7 +81,7 @@ app.load = function() {
       cards: []
     });
   }
-  document.querySelector(".content").style.padding = a[1] + "px";
+  app.thistag.parentNode.style.padding = a[1] + "px";
   /* preloadエリアを初期化 */
   app.initPreloadArea(a[0]);
 }
@@ -159,7 +161,7 @@ app.preload = function(comment_and_flag, photo, data) {
 // 長さが最も短いストリームのインデックスを返す
 app.getIndexOfShortestStream = function(root, stage) {
   var min_h_index = 0;
-  var min_h = app.stage().streams[0].streamHeight;     //root.getElementById("stream_0").offsetHeight;
+  var min_h = app.stage().streams[0].streamHeight;
   for(var i=0; i < stage.streams.length; i++) {
     var h = app.stage().streams[i].streamHeight;
     if(h < min_h) {
@@ -184,9 +186,9 @@ window.addEventListener("griddle-cards-update", function() {
   if(app.cards.length > 0) {
     var card = app.cards[0];
     app.cards.shift();
-    document.querySelector("griddle-cards").pushCard(card.text, card.src, card.dataset);
+    app.thistag.pushCard(card.text, card.src, card.dataset);
   }else {
-    document.querySelector("griddle-cards").end = Math.random();
+    app.thistag.end = Math.random();
   }
 }, false);
 
@@ -194,6 +196,7 @@ window.addEventListener("griddle-cards-update", function() {
 
 Polymer('griddle-cards', {
   ready: function(e, detail, sender) {
+    app.thistag = this;
     app.load();
     this.job('job1', function() {
       this.fire("griddle-cards-ready");
