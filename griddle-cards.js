@@ -39,7 +39,7 @@ app.tool.binder = function(template, json) {
   return code;
 }
 
-app.thistag = '';/*document.querySelector("griddle-cards");がセットされる*/
+app.thistag = ''; /*document.querySelector("griddle-cards");がセットされる*/
 
 // <griddle-cards> のパス
 app.me = function() {
@@ -80,6 +80,12 @@ app.load = function() {
       streamHeight: 0,
       cards: []
     });
+  }
+  /* rippleの表示／非表示対応 */
+  if(app.me().noripple != undefined) {
+    app.me().card_ripple = 'none';
+  }else {
+    app.me().card_ripple = 'block';
   }
   app.thistag.parentNode.style.padding = a[1] + "px";
   /* preloadエリアを初期化 */
@@ -129,7 +135,6 @@ app.optimizeAdd = function(comment_and_flag, photo, data) {
     xhr.open('GET', photo, true);
     xhr.responseType = 'blob';
     xhr.onload = function(e) {
-      //var blob_url = window.webkitURL.createObjectURL(this.response);
       var blob_url = window.URL.createObjectURL(this.response);
       app.preload(comment_and_flag, blob_url, data);
     }
@@ -205,6 +210,18 @@ Polymer('griddle-cards', {
 
   cardClicked: function(e, detail, sender) {
     var cn = e.target.className;
+    /* paper-ripple を無効化した場合に必要になるコード */
+    if(app.me().noripple != undefined) {
+      var cns = cn.split(' ');
+      for(var i=0; i < cns.length; i++) {
+        var c = cns[i];
+        if(c.search(/g\_/) == 0) {
+          cn = c;
+          break;
+        }
+      }
+    }
+    /* ---- */
     var stream = cn.split('@')[1];
     var index  = +(cn.split('@')[0].replace('g_', ''));
     var card = app.stage().streams[stream].cards[index];

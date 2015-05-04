@@ -8,7 +8,7 @@
   <body>
     <polymer-element name="griddle-cards"
                      attributes="streams update lastClickedCard end
-                                 column marginLeft marginRight minWidth maxWidth csp">
+                                 column marginLeft marginRight minWidth maxWidth csp noripple">
       <template>
         <style>
         .card {
@@ -38,9 +38,13 @@
           padding-top: 1px;
           display: flex;
           flex-direction: row;
+          /*flex-wrap: wrap;*/
           justify-content: center;
         }
 
+        .card {
+          /*background-color: #fff;*/
+        }
         </style>
         <div id="wrapper">
           <!-- ストリーム -->
@@ -50,11 +54,11 @@
               <template repeat="{{c,j in s.cards}}">
                 <paper-shadow z="{{c.shadowZ ? c.shadowZ : 0}}">
                   <div on-click={{cardClicked}} class="card">
-                    <img src="{{c.photo}}" class=photo style="height:{{c.dataset.heights[0]}}px; margin-bottom:{{c.dataset.photo_only ? s.mbottom : 0}}px;">
-                    <div class="comment" style="margin-bottom:{{s.mbottom}}px; display: {{c.comment[1]}}; height:{{c.dataset.heights[1]}}px">
+                    <img src="{{c.photo}}" class="photo g_{{j}}@{{i}}" style="height:{{c.dataset.heights[0]}}px; margin-bottom:{{c.dataset.photo_only ? s.mbottom : 0}}px;">
+                    <div class="comment g_{{j}}@{{i}}" style="margin-bottom:{{s.mbottom}}px; display: {{c.comment[1]}}; height:{{c.dataset.heights[1]}}px">
                       {{c.comment[0]}}
                     </div>
-                    <paper-ripple fit class="g_{{j}}@{{i}}"></paper-ripple>
+                    <paper-ripple fit class="g_{{j}}@{{i}}" style="display: {{card_ripple}}"></paper-ripple>
                   </div>
                 </paper-shadow>
               </template>
